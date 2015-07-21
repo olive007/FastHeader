@@ -1,0 +1,54 @@
+{
+	"activated": "True",
+
+	"author": "olive007",
+
+	"time_format": "%d/%m/%Y %H:%M:%S",
+
+	"time_format_regex": "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}",
+
+	"max_line_lenght": 80,
+
+	"file_mapping": {
+		"^.*\\.c$":		"c",
+		"^.*\\.h$":		"c",
+		"^.*\\.c\\+\\+$":	"c",
+		"^.*\\.cpp$":	"c",
+		"^.*\\.cxx$":	"c",
+		"^.*\\.hpp$":	"c",
+		"^.*\\.hh$":	"c",
+
+		"^.*\\.css$":	"css",
+		
+		"^.*\\.html$":	"html",
+
+		"^.*\\.js$":	"javascript",
+
+		"^Makefile$":	"makefile",
+		"^.*\\.mk$":	"makefile",
+
+		"^.*\\.pl$":	"perl",
+		
+		"^.*\\.php$":	"php",
+		
+		"^.*\\.py$":	"python",
+		
+		"^.*\\.sh$":	"shell_script",
+		"^.*\\.tsh$":	"shell_script",
+		"^.*\\.bash$":	"shell_script",
+
+		"^.*\\.sql$":	"sql"
+	},
+
+	"variable": {
+
+		"email":"info@devolive.be"
+
+	},
+	"variable_regex": {
+
+		"email":".+@.+\\..+"
+
+	}
+
+}
