@@ -3,14 +3,23 @@
 # Project : FastHeader
 # Contact : info@devolive.be
 # Created by olive007 at 17/07/2015 19:58:06
-# Last update by olive007 at 24/07/2015 18:24:31
+# Last update by olive007 at 24/07/2015 19:09:51
 
 import os, re, getpass, time
 import sublime, sublime_plugin
 
 PLUGIN_NAME = "FastHeader"
 PLUGIN_PATH = os.path.join(sublime.packages_path(), PLUGIN_NAME)
-HEADER_PATH = os.path.join(PLUGIN_PATH, "HeaderTemplates")
+HEADER_TEMPLATE_PATH = os.path.join(PLUGIN_PATH, "HeaderTemplates")
+
+def plugin_loaded():
+	global PLUGIN_NAME
+	global PLUGIN_PATH
+	global HEADER_TEMPLATE_PATH
+
+	PLUGIN_NAME = "FastHeader"
+	PLUGIN_PATH = os.path.join(sublime.packages_path(), PLUGIN_NAME)
+	HEADER_TEMPLATE_PATH = os.path.join(PLUGIN_PATH, "HeaderTemplates")
 
 def get_settings():
 	return sublime.load_settings("%s.sublime-settings" % PLUGIN_NAME)
@@ -19,7 +28,7 @@ def get_syntax(file_name):
 	syntax = 'undefined'
 
 	file_mapping = get_settings().get('file_mapping')
-		
+
 	for key in file_mapping:
 		mapping = re.compile(key)
 		if (mapping.match(file_name)):
@@ -32,15 +41,17 @@ def get_header_template(syntax):
 	
 	header_file = ""
 	project = sublime.active_window().project_data()
+	
 	if project:
-		custom_template_dir = project['fastHeader']
-		if custom_template_dir is None or len(custom_template_dir)!= 0:
-			file_name = os.path.join(custom_template_dir, ("%s.template" % syntax))
-			if os.path.isfile(file_name):
-				header_file = file_name
+		if 'fastHeader' in project.keys():
+			custom_template_dir = project['fastHeader']
+			if custom_template_dir is None or len(custom_template_dir)!= 0:
+				file_name = os.path.join(custom_template_dir, ("%s.template" % syntax))
+				if os.path.isfile(file_name):
+					header_file = file_name
 
 	if header_file == "":
-		header_file = os.path.join(HEADER_PATH, ("%s.template" % syntax))
+		header_file = os.path.join(HEADER_TEMPLATE_PATH, ("%s.template" % syntax))
 
 	file = open(header_file, 'r')
 	template = file.read()
@@ -89,12 +100,15 @@ def get_custom_variable_regex(name):
 def get_beginning(view):
 	syntax = get_syntax(os.path.basename(view.file_name()))
 
-	template = get_header_template(syntax)
+	try:
+		template = get_header_template(syntax)
+	except Exception as e:
+		sublime.error_message("Error : template for %s not found" % syntax)
+		return
 
 	lines = template.split("\n")
 	nb_line_template = len(lines)
 	max_line_lenght = get_settings().get("max_line_lenght")
-
 	
 	beginning = view.substr(sublime.Region(0, nb_line_template * max_line_lenght))
 	lines = beginning.split('\n')
@@ -286,7 +300,11 @@ def header_is_present(view):
 	present = False
 	syntax = get_syntax(os.path.basename(view.file_name()))
 
-	template = get_header_template(syntax)
+	try:
+		template = get_header_template(syntax)
+	except Exception as e:
+		sublime.error_message("Error : template for %s not found" % syntax)
+		return
 	
 	beginning = get_beginning(view)
 
