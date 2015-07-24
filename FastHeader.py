@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # FastHeader.py encoded in UTF-8
-# Project : NdfdqsfsfqsdfNdfdqsfsfqsdfNdfdqsfsfqsdfNdfdqsfsfqsdfNdfdqNdfdqsfsfqs
+# Project : FastHeader
 # Contact : info@devolive.be
 # Created by olive007 at 17/07/2015 19:58:06
-# Last update by olive007 at 19/07/2015 17:08:26
+# Last update by olive007 at 24/07/2015 18:24:31
 
 import os, re, getpass, time
 import sublime, sublime_plugin
@@ -29,8 +29,18 @@ def get_syntax(file_name):
 
 def get_header_template(syntax):
 	template = 'undefined'
+	
+	header_file = ""
+	project = sublime.active_window().project_data()
+	if project:
+		custom_template_dir = project['fastHeader']
+		if custom_template_dir is None or len(custom_template_dir)!= 0:
+			file_name = os.path.join(custom_template_dir, ("%s.template" % syntax))
+			if os.path.isfile(file_name):
+				header_file = file_name
 
-	header_file = os.path.join(HEADER_PATH, ("%s.template" % syntax))
+	if header_file == "":
+		header_file = os.path.join(HEADER_PATH, ("%s.template" % syntax))
 
 	file = open(header_file, 'r')
 	template = file.read()
@@ -159,6 +169,16 @@ def regex_template(template):
 		(re.compile("\[\[encoding\]\]"), doEncoding),
 		(re.compile("\[\[(.*)\]\]"), doCustomVar)
 	)
+
+	template = template.replace('\\', "\\\\")
+	template = template.replace('.', "\.")
+	template = template.replace('^', "\^")
+	template = template.replace('$', "\$")
+	template = template.replace('*', "\*")
+	template = template.replace('+', "\+")
+	template = template.replace('?', "\?")
+	template = template.replace('|', "\|")
+
 	lines = template.split('\n')
 	i = 0
 	for line in lines:
@@ -203,7 +223,7 @@ def render_template(template, beginning=''):
 
 	def doCustomVar(line, res):
 		var_name = res.group(1)
-		return "%s%s%s" % (line[:res.start(0)], get_variable(var_name), line[res.end(0):])
+		return "%s%s%s" % (line[:res.start(0)], get_custom_variable(var_name), line[res.end(0):])
 
 	render = ""
 	new_actions = (
@@ -296,7 +316,6 @@ class fast_header_addCommand(sublime_plugin.TextCommand):
 
 
 
-
 class fast_header_updateCommand(sublime_plugin.TextCommand):
 
 	def run(self, edit):
@@ -307,29 +326,38 @@ class fast_header_updateCommand(sublime_plugin.TextCommand):
 			if header_is_present(sublime.active_window().active_view()):
 				print("Update header type '%s' in file '%s'" % (file_syntax, file_name))
 
-			try:
-				template = get_header_template(file_syntax)
-			except Exception as e:
-				sublime.error_message("Error : template for %s not found" % file_syntax)
-				return
+				try:
+					template = get_header_template(file_syntax)
+				except Exception as e:
+					sublime.error_message("Error : template for %s not found" % file_syntax)
+					return
 
-			beginning = get_beginning(sublime.active_window().active_view())
+				beginning = get_beginning(sublime.active_window().active_view())
 
-			template_render = render_template(template, beginning)
-			region = sublime.Region(0, len(beginning))
-			self.view.replace(edit, region, template_render)
-
-
+				template_render = render_template(template, beginning)
+				region = sublime.Region(0, len(beginning))
+				self.view.replace(edit, region, template_render)
 
 
-class FastHeadearEvent(sublime_plugin.EventListener):
+
+class FastHeaderEvent(sublime_plugin.EventListener):
 	
+	new_view_id = []
+
+	def on_new(self, view):
+		FastHeaderEvent.new_view_id.append(view.id())
+
 	def on_pre_save(self, view):
 		if view.is_dirty():
 			file_name = get_file_name()
 			file_syntax = get_syntax(file_name)
 
-			if (get_settings().get("activated")):
+			if get_settings().get("activated") == True:
 				if file_syntax is not 'undefined':
 					view.run_command('fast_header_update')
-	
+
+	def on_post_save(self, view):
+		if get_settings().get("activated") == True and view.id() in FastHeaderEvent.new_view_id:
+			view.run_command('fast_header_add')
+			if get_syntax(get_file_name()) is not 'undefined':
+				FastHeaderEvent.new_view_id.remove(view.id())

@@ -1,5 +1,5 @@
 {
-	"activated": "True",
+	"activated": true,
 
 	"author": "olive007",
 
@@ -45,6 +45,7 @@
 		"email":"info@devolive.be"
 
 	},
+	
 	"variable_regex": {
 
 		"email":".+@.+\\..+"

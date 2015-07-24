@@ -1,0 +1,10 @@
+[
+    {
+        "caption": "Fast Header: Add Header",
+        "command": "fast_header_add"
+    },
+    {
+        "caption": "Fast Header: Update Header",
+        "command": "fast_header_update"
+    }
+]

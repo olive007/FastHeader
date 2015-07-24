@@ -5,10 +5,11 @@
         [
             {
                 "caption": "Add Header",
-                "command": "fast_header_add",
-                "args":{
-                    "path": []
-                }
+                "command": "fast_header_add"
+            },
+            {
+                "caption": "Update Header",
+                "command": "fast_header_update"
             }
         ]
     }
