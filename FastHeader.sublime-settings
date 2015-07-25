@@ -1,51 +1,107 @@
 {
+	/*
+		Enable or disabled the plugin.
+	*/
 	"activated": true,
-
+	/*
+		The name of the author. If this is empty the plugin take name of the current user.
+	*/
 	"author": "olive007",
-
+	/*
+		That is how the date is printed.
+		For more information lock at : "https://docs.python.org/3/library/time.html#time.strftime"
+	*/
 	"time_format": "%d/%m/%Y %H:%M:%S",
-
+	/*
+		The regex to match the date format
+		For more information lock at : "https://docs.python.org/3/library/re.html"
+	*/
 	"time_format_regex": "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}",
-
+	/*
+		The maximum lenght of each line for the header.
+	*/
 	"max_line_lenght": 80,
-
+	/*
+		The regex used to knonw which header match with type of source code
+		If the plugin don't macth the type of the file, It will do nothing.
+	*/
 	"file_mapping": {
-		"^.*\\.c$":		"c",
-		"^.*\\.h$":		"c",
+		"^.*\\.c$":			"c",
+		"^.*\\.h$":			"c",
 		"^.*\\.c\\+\\+$":	"c",
-		"^.*\\.cpp$":	"c",
-		"^.*\\.cxx$":	"c",
-		"^.*\\.hpp$":	"c",
-		"^.*\\.hh$":	"c",
+		"^.*\\.cpp$":		"c",
+		"^.*\\.cxx$":		"c",
+		"^.*\\.hpp$":		"c",
+		"^.*\\.hh$":		"c",
 
-		"^.*\\.css$":	"css",
+		"^.*\\.css$":		"css",
 		
-		"^.*\\.html$":	"html",
+		"^.*\\.html$":		"html",
 
-		"^.*\\.js$":	"javascript",
+		"^.*\\.js$":		"javascript",
 
-		"^Makefile$":	"makefile",
-		"^.*\\.mk$":	"makefile",
+		"^Makefile$":		"makefile",
+		"^.*\\.mk$":		"makefile",
 
-		"^.*\\.pl$":	"perl",
+		"^.*\\.pl$":		"perl",
 		
-		"^.*\\.php$":	"php",
+		"^.*\\.php$":		"php",
 		
-		"^.*\\.py$":	"python",
+		"^.*\\.py$":		"python",
 		
-		"^.*\\.sh$":	"shell_script",
-		"^.*\\.tsh$":	"shell_script",
-		"^.*\\.bash$":	"shell_script",
+		"^.*\\.sh$":		"shell_script",
+		"^.*\\.tsh$":		"shell_script",
+		"^.*\\.bash$":		"shell_script",
 
-		"^.*\\.sql$":	"sql"
+		"^.*\\.sql$":		"sql"
 	},
+	/*
+		All the variable you can use in your template. 
+		To use a variable you just need to surrond it with
 
+			- 2 square bracket '[[variable]]'
+				this variable will updated at every saving of the file.
+
+			- 2 curly brace '{{variable}}'
+				this variable will set in the creation of the header.
+			
+	*/
 	"variable": {
 
-		"email":"info@devolive.be"
+		/*
+		This variable is used by the plugin and can't be customised
+
+			- author
+				The author of the current file.
+
+			- date
+				The date and hour of the current time.
+
+			- fileName
+				The file name of the current file.
+
+			- fileNameWithoutExtend
+				The file name of the current file without the extend of the file.
+
+			- filePath
+				the Full path of the current file without the file name.
+
+			- projectName
+				If a project exist, this variable is the name of the project.
+				The variable need to set into .sublime-project file.
+
+			- Encoding
+				The encoding of the current file.
+
+		*/
+
+		"email":"example@domain.com"
 
 	},
-	
+	/*
+		If you add a custom varibale you need to add a regex to match it.
+		For more information lock at : "https://docs.python.org/3/library/re.html"
+	*/
 	"variable_regex": {
 
 		"email":".+@.+\\..+"
