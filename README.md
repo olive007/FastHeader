@@ -1,6 +1,6 @@
 # Fast Header
 A little plugin for Sublime Text 3 which allow user to create header into the source files.
-The plugin update automaticaly the variable between the double square bracket [[variable]]. The other variable between curly brace {{variable}} is setted in the creation of the header.
+The plugin update automaticaly the variable between the double square bracket [[variable]]. The other variable between curly brace {{variable}} is setted at the creation of the header.
 
 ## Feature
 - customize your template

@@ -3,7 +3,7 @@
 # Project : FastHeader
 # Contact : info@devolive.be
 # Created by olive007 at 17/07/2015 19:58:06
-# Last update by olive007 at 24/07/2015 19:09:51
+# Last update by olive007 at 25/07/2015 12:50:50
 
 import os, re, getpass, time
 import sublime, sublime_plugin
@@ -36,15 +36,37 @@ def get_syntax(file_name):
 
 	return syntax
 
+def get_project():
+	project = sublime.active_window().project_data()
+
+	if (len(project.keys())) <= 1:
+		return None
+	return project
+
+def get_activated():
+	activated = get_settings().get('activated')
+
+	project = get_project()
+	if project:
+		if 'fastHeader' in project.keys():
+			if 'activated' in project['fastHeader'].keys():
+				tmp = project['fastHeader']['activated']
+				if tmp.lower() == "true":
+					activated = True
+				elif tmp.lower() == "false":
+					activated = False
+
+	return activated
+
 def get_header_template(syntax):
 	template = 'undefined'
 	
 	header_file = ""
-	project = sublime.active_window().project_data()
+	project = get_project()
 	
 	if project:
 		if 'fastHeader' in project.keys():
-			custom_template_dir = project['fastHeader']
+			custom_template_dir = project['fastHeader']['customTemplate']
 			if custom_template_dir is None or len(custom_template_dir)!= 0:
 				file_name = os.path.join(custom_template_dir, ("%s.template" % syntax))
 				if os.path.isfile(file_name):
@@ -79,14 +101,14 @@ def get_file_path():
 	return os.path.basename(sublime.active_window().active_view().file_name())
 
 def get_project_name():
-	project = sublime.active_window().project_data()
-	if project is None:
-		return "No Project"
-	else:
+	project = get_project()
+	if project:
 		project_name = project.get("name")
 		if project_name is None:
 			return ""
-	return project_name
+		return project_name
+	else:
+		return "unknown"
 
 def get_encoding():
 	return sublime.active_window().active_view().encoding()
@@ -370,12 +392,12 @@ class FastHeaderEvent(sublime_plugin.EventListener):
 			file_name = get_file_name()
 			file_syntax = get_syntax(file_name)
 
-			if get_settings().get("activated") == True:
+			if get_activated():
 				if file_syntax is not 'undefined':
 					view.run_command('fast_header_update')
 
 	def on_post_save(self, view):
-		if get_settings().get("activated") == True and view.id() in FastHeaderEvent.new_view_id:
+		if get_activated and view.id() in FastHeaderEvent.new_view_id:
 			view.run_command('fast_header_add')
 			if get_syntax(get_file_name()) is not 'undefined':
 				FastHeaderEvent.new_view_id.remove(view.id())
